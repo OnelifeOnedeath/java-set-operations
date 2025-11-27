@@ -2,7 +2,7 @@ import java.util.*;
 import java.util.function.BinaryOperator;
 
 /**
- * Исследование алгебраических структур: от множеств до колец
+ * Исследование алгебраических структур: от множеств до матриц преобразований
  */
 public class Main {
     
@@ -10,15 +10,18 @@ public class Main {
         System.out.println("Исследование алгебраических структур");
         System.out.println("=====================================\n");
         
-        // Часть 1: Базовое задание - операции над множествами
-        demonstrateSetOperations();
-        
-        // Часть 2: Исследование колец и идеалов
-        investigateRingsAndIdeals();
+        demonstrateSetOperations();        // Исходное задание
+        investigateRingsAndIdeals();       // Кольца и идеалы
+        visualizeMatrixTransformations();  // Матрицы поворотов квадрата
+        investigateAutomorphismGroup();    // Группа автоморфизмов
+        demonstrateQuotientStructures();   // Фактор-кольца
+        showPracticalApplications();       // Приложения
+        generateRandomExamples();          // Генератор примеров
+        solveCustomProblems();             // Решатель задач
     }
     
     /**
-     * ЧАСТЬ 1: Базовое задание - операции над множествами
+     * 1. ОПЕРАЦИИ НАД МНОЖЕСТВАМИ - исходное задание
      */
     static void demonstrateSetOperations() {
         System.out.println("1. ОПЕРАЦИИ НАД МНОЖЕСТВАМИ");
@@ -29,22 +32,14 @@ public class Main {
         
         System.out.println("Множество A: " + A);
         System.out.println("Множество B: " + B);
-        System.out.println();
         
-        // Различные бинарные операции
-        BinaryOperator<Integer> op1 = (a, b) -> a * b + 1;
-        BinaryOperator<Integer> op2 = (a, b) -> a * a + b * b;
-        BinaryOperator<Integer> op3 = (a, b) -> Math.abs(a - b);
+        BinaryOperator<Integer> customOp = (a, b) -> a * b + 1;
+        Set<Integer> result = applyBinaryOperation(A, B, customOp);
         
-        System.out.println("a * b + 1:      " + applyBinaryOperation(A, B, op1));
-        System.out.println("a² + b²:        " + applyBinaryOperation(A, B, op2));
-        System.out.println("|a - b|:        " + applyBinaryOperation(A, B, op3));
+        System.out.println("A ⊗ B (a*b+1): " + result);
         System.out.println();
     }
     
-    /**
-     * Универсальная функция для бинарных операций над множествами
-     */
     public static <T> Set<T> applyBinaryOperation(Set<T> setA, Set<T> setB, BinaryOperator<T> operation) {
         Set<T> result = new HashSet<>();
         for (T a : setA) {
@@ -56,257 +51,219 @@ public class Main {
     }
     
     /**
-     * ЧАСТЬ 2: Исследование колец и циклических идеалов
+     * 2. КОЛЬЦА И ИДЕАЛЫ
      */
     static void investigateRingsAndIdeals() {
         System.out.println("2. КОЛЬЦА И ЦИКЛИЧЕСКИЕ ИДЕАЛЫ");
         System.out.println("------------------------------");
         
-        // Исследуем разные кольца вычетов
-        investigateZModN(12, "Z/12Z - кольцо с богатой структурой идеалов");
-        investigateZModN(8, "Z/8Z - кольцо с идеалами степени 2");
-        investigateZModN(7, "Z/7Z - простое поле");
-        investigateZModN(6, "Z/6Z - не область целостности");
+        investigateZModN(12);
+        investigateZModN(8);
     }
     
-    /**
-     * Исследование кольца Z/nZ
-     */
-    static void investigateZModN(int n, String description) {
-        System.out.println("\n" + description);
-        System.out.println("Элементы: " + generateZModN(n));
-        
+    static void investigateZModN(int n) {
+        System.out.println("\nКольцо Z/" + n + "Z:");
         Set<Integer> ring = generateZModN(n);
-        BinaryOperator<Integer> add = (a, b) -> (a + b) % n;
-        BinaryOperator<Integer> mult = (a, b) -> (a * b) % n;
+        System.out.println("Элементы: " + ring);
         
-        if (verifyRing(ring, add, mult)) {
-            System.out.println("✓ Является кольцом");
-            findCyclicIdeals(ring, mult, n);
+        // Находим идеалы
+        System.out.println("Идеалы:");
+        for (int i = 1; i < n; i++) {
+            if (n % i == 0) {
+                Set<Integer> ideal = generateIdeal(ring, i, n);
+                System.out.println("  (" + i + ") = " + ideal);
+            }
         }
-        System.out.println();
     }
     
-    /**
-     * Генерация множества Z/nZ
-     */
     static Set<Integer> generateZModN(int n) {
         Set<Integer> result = new TreeSet<>();
-        for (int i = 0; i < n; i++) {
-            result.add(i);
-        }
+        for (int i = 0; i < n; i++) result.add(i);
         return result;
     }
     
-    /**
-     * Проверка свойств кольца
-     */
-    static boolean verifyRing(Set<Integer> R, BinaryOperator<Integer> add, BinaryOperator<Integer> mult) {
-        // Проверяем наличие нуля
-        Integer zero = findZero(R, add);
-        if (zero == null) return false;
-        
-        // Проверяем абелеву группу по сложению
-        if (!verifyAbelianGroup(R, add, zero)) return false;
-        
-        // Проверяем ассоциативность умножения
-        if (!verifyAssociativity(R, mult)) return false;
-        
-        // Проверяем дистрибутивность
-        return verifyDistributivity(R, add, mult);
-    }
-    
-    /**
-     * Поиск нулевого элемента
-     */
-    static Integer findZero(Set<Integer> R, BinaryOperator<Integer> add) {
-        for (Integer candidate : R) {
-            boolean isZero = true;
-            for (Integer x : R) {
-                if (!add.apply(x, candidate).equals(x)) {
-                    isZero = false;
-                    break;
-                }
-            }
-            if (isZero) return candidate;
-        }
-        return null;
-    }
-    
-    /**
-     * Проверка абелевой группы
-     */
-    static boolean verifyAbelianGroup(Set<Integer> R, BinaryOperator<Integer> add, Integer zero) {
-        // Ассоциативность
-        if (!verifyAssociativity(R, add)) return false;
-        
-        // Нулевой элемент
-        for (Integer x : R) {
-            if (!add.apply(x, zero).equals(x)) return false;
-        }
-        
-        // Противоположные элементы
-        for (Integer x : R) {
-            boolean hasInverse = false;
-            for (Integer y : R) {
-                if (add.apply(x, y).equals(zero) && add.apply(y, x).equals(zero)) {
-                    hasInverse = true;
-                    break;
-                }
-            }
-            if (!hasInverse) return false;
-        }
-        
-        // Коммутативность
-        for (Integer a : R) {
-            for (Integer b : R) {
-                if (!add.apply(a, b).equals(add.apply(b, a))) return false;
-            }
-        }
-        
-        return true;
-    }
-    
-    /**
-     * Проверка ассоциативности
-     */
-    static boolean verifyAssociativity(Set<Integer> R, BinaryOperator<Integer> op) {
-        for (Integer a : R) {
-            for (Integer b : R) {
-                for (Integer c : R) {
-                    Integer left = op.apply(op.apply(a, b), c);
-                    Integer right = op.apply(a, op.apply(b, c));
-                    if (!left.equals(right)) return false;
-                }
-            }
-        }
-        return true;
-    }
-    
-    /**
-     * Проверка дистрибутивности
-     */
-    static boolean verifyDistributivity(Set<Integer> R, BinaryOperator<Integer> add, BinaryOperator<Integer> mult) {
-        for (Integer a : R) {
-            for (Integer b : R) {
-                for (Integer c : R) {
-                    Integer left = mult.apply(a, add.apply(b, c));
-                    Integer right = add.apply(mult.apply(a, b), mult.apply(a, c));
-                    if (!left.equals(right)) return false;
-                }
-            }
-        }
-        return true;
-    }
-    
-    /**
-     * Поиск циклических идеалов
-     */
-    static void findCyclicIdeals(Set<Integer> R, BinaryOperator<Integer> mult, int n) {
-        System.out.println("Циклические идеалы:");
-        
-        // Проверяем все возможные образующие
-        for (int generator = 0; generator < n; generator++) {
-            Set<Integer> ideal = generateIdeal(R, mult, generator);
-            
-            if (ideal.size() > 0 && ideal.size() < R.size()) {
-                System.out.print("  (" + generator + ") = " + ideal);
-                
-                if (verifyIdeal(ideal, R, mult)) {
-                    System.out.print(" - идеал");
-                    
-                    // Дополнительная информация
-                    if (isPrimeIdeal(ideal, R, mult)) {
-                        System.out.print(", простой");
-                    }
-                    if (isMaximalIdeal(ideal, R, n)) {
-                        System.out.print(", максимальный");
-                    }
-                }
-                System.out.println();
-            }
-        }
-        
-        // Особые случаи
-        System.out.println("  (0) = {0} - нулевой идеал");
-        System.out.println("  (1) = " + R + " - единичный идеал");
-    }
-    
-    /**
-     * Генерация идеала по образующему
-     */
-    static Set<Integer> generateIdeal(Set<Integer> R, BinaryOperator<Integer> mult, int generator) {
+    static Set<Integer> generateIdeal(Set<Integer> ring, int generator, int mod) {
         Set<Integer> ideal = new TreeSet<>();
-        ideal.add(generator);
-        
-        boolean changed;
-        do {
-            changed = false;
-            Set<Integer> newElements = new HashSet<>();
-            
-            for (Integer a : ideal) {
-                for (Integer r : R) {
-                    Integer product = mult.apply(a, r);
-                    if (!ideal.contains(product)) {
-                        newElements.add(product);
-                        changed = true;
-                    }
-                }
-            }
-            ideal.addAll(newElements);
-        } while (changed);
-        
+        for (int r : ring) {
+            ideal.add((generator * r) % mod);
+        }
         return ideal;
     }
     
     /**
-     * Проверка свойств идеала
+     * 3. МАТРИЦЫ ПОВОРОТОВ КВАДРАТА - как просил преподаватель
      */
-    static boolean verifyIdeal(Set<Integer> ideal, Set<Integer> R, BinaryOperator<Integer> mult) {
-        for (Integer a : ideal) {
-            for (Integer r : R) {
-                Integer left = mult.apply(a, r);
-                Integer right = mult.apply(r, a);
-                
-                if (!ideal.contains(left) || !ideal.contains(right)) {
-                    return false;
+    static void visualizeMatrixTransformations() {
+        System.out.println("\n3. МАТРИЦЫ ПОВОРОТОВ КВАДРАТА");
+        System.out.println("-----------------------------");
+        
+        // Матрицы поворотов для квадрата
+        double[][] rotate0 = {{1,0},{0,1}};     // 0°
+        double[][] rotate90 = {{0,-1},{1,0}};   // 90°
+        double[][] rotate180 = {{-1,0},{0,-1}}; // 180°
+        double[][] rotate270 = {{0,1},{-1,0}};  // 270°
+        
+        // Матрицы отражений
+        double[][] reflectX = {{1,0},{0,-1}};   // Отражение по X
+        double[][] reflectY = {{-1,0},{0,1}};   // Отражение по Y
+        double[][] reflectD1 = {{0,1},{1,0}};   // Отражение по диагонали
+        double[][] reflectD2 = {{0,-1},{-1,0}}; // Отражение по другой диагонали
+        
+        System.out.println("Группа диэдра D4 - преобразования квадрата:");
+        System.out.println("Повороты:");
+        printMatrix("R0 (0°):   ", rotate0);
+        printMatrix("R90 (90°): ", rotate90);
+        printMatrix("R180 (180°):", rotate180);
+        printMatrix("R270 (270°):", rotate270);
+        
+        System.out.println("\nОтражения:");
+        printMatrix("Sx (отр.X):", reflectX);
+        printMatrix("Sy (отр.Y):", reflectY);
+        printMatrix("Sd1 (диаг1):", reflectD1);
+        printMatrix("Sd2 (диаг2):", reflectD2);
+        
+        // Покажем композицию преобразований
+        System.out.println("\nКомпозиция преобразований:");
+        double[][] comp1 = multiplyMatrices(rotate90, rotate90);
+        printMatrix("R90 ∘ R90 = R180:", comp1);
+        
+        double[][] comp2 = multiplyMatrices(rotate90, reflectX);
+        printMatrix("R90 ∘ Sx = Sd1:  ", comp2);
+    }
+    
+    static void printMatrix(String label, double[][] matrix) {
+        System.out.print(label + " [");
+        System.out.printf("%2.0f %2.0f", matrix[0][0], matrix[0][1]);
+        System.out.print("] [");
+        System.out.printf("%2.0f %2.0f", matrix[1][0], matrix[1][1]);
+        System.out.println("]");
+    }
+    
+    static double[][] multiplyMatrices(double[][] a, double[][] b) {
+        double[][] result = new double[2][2];
+        result[0][0] = a[0][0]*b[0][0] + a[0][1]*b[1][0];
+        result[0][1] = a[0][0]*b[0][1] + a[0][1]*b[1][1];
+        result[1][0] = a[1][0]*b[0][0] + a[1][1]*b[1][0];
+        result[1][1] = a[1][0]*b[0][1] + a[1][1]*b[1][1];
+        return result;
+    }
+    
+    /**
+     * 4. ГРУППА АВТОМОРФИЗМОВ
+     */
+    static void investigateAutomorphismGroup() {
+        System.out.println("\n4. ГРУППА АВТОМОРФИЗМОВ КВАДРАТА");
+        System.out.println("-------------------------------");
+        
+        System.out.println("D4 = {R0, R90, R180, R270, Sx, Sy, Sd1, Sd2}");
+        System.out.println("Порядок группы: 8");
+        System.out.println("Таблица умножения (частично):");
+        System.out.println("R90 ∘ R90 = R180");
+        System.out.println("R90 ∘ Sx = Sd1");
+        System.out.println("Sx ∘ Sx = R0");
+        System.out.println("R90 ∘ R270 = R0");
+        
+        System.out.println("\nСтруктура группы:");
+        System.out.println("D4 ≅ Z/4Z ⋊ Z/2Z - полупрямое произведение");
+        System.out.println("Подгруппа поворотов: {R0, R90, R180, R270} ≅ Z/4Z");
+        System.out.println("Это нормальная подгруппа порядка 4");
+    }
+    
+    /**
+     * 5. ФАКТОР-КОЛЬЦА И ГОМОМОРФИЗМЫ
+     */
+    static void demonstrateQuotientStructures() {
+        System.out.println("\n5. ФАКТОР-КОЛЬЦА И ГОМОМОРФИЗМЫ");
+        System.out.println("-------------------------------");
+        
+        System.out.println("Пример: Z/6Z / (2) ≅ Z/2Z");
+        System.out.println("Идеал: (2) = {0, 2, 4}");
+        System.out.println("Классы смежности: {0,2,4} + {1,3,5}");
+        System.out.println("Фактор-кольцо имеет 2 элемента: [0] и [1]");
+        
+        System.out.println("\nГомоморфизм φ: Z/6Z → Z/2Z");
+        System.out.println("φ(x) = x mod 2");
+        System.out.println("Ядро: Ker φ = {0, 2, 4} = (2)");
+        System.out.println("Образ: Im φ = Z/2Z");
+    }
+    
+    /**
+     * 6. ПРАКТИЧЕСКИЕ ПРИЛОЖЕНИЯ
+     */
+    static void showPracticalApplications() {
+        System.out.println("\n6. ПРАКТИЧЕСКИЕ ПРИЛОЖЕНИЯ");
+        System.out.println("--------------------------");
+        
+        System.out.println("Криптография:");
+        System.out.println("- RSA: умножение в Z/nZ");
+        System.out.println("- Эллиптические кривые: групповой закон");
+        
+        System.out.println("\nКомпьютерная графика:");
+        System.out.println("- Повороты и отражения: матрицы 2x2");
+        System.out.println("- 3D преобразования: матрицы 4x4");
+        
+        System.out.println("\nКодирование:");
+        System.out.println("- Коды с исправлением ошибок: поля Галуа");
+        System.out.println("- Контрольные суммы: арифметика по модулю");
+    }
+    
+    /**
+     * 7. ГЕНЕРАТОР ПРИМЕРОВ
+     */
+    static void generateRandomExamples() {
+        System.out.println("\n7. ГЕНЕРАТОР СЛУЧАЙНЫХ ПРИМЕРОВ");
+        System.out.println("-------------------------------");
+        
+        Random rand = new Random();
+        int n = rand.nextInt(5) + 6; // 6-10
+        System.out.println("Случайное кольцо: Z/" + n + "Z");
+        
+        Set<Integer> ring = generateZModN(n);
+        System.out.println("Элементы: " + ring);
+        
+        // Найдем нетривиальные идеалы
+        List<Integer> ideals = new ArrayList<>();
+        for (int i = 2; i < n; i++) {
+            if (n % i == 0) ideals.add(i);
+        }
+        
+        if (!ideals.isEmpty()) {
+            int idealGen = ideals.get(rand.nextInt(ideals.size()));
+            Set<Integer> ideal = generateIdeal(ring, idealGen, n);
+            System.out.println("Идеал: (" + idealGen + ") = " + ideal);
+        } else {
+            System.out.println("Простое кольцо - только тривиальные идеалы");
+        }
+    }
+    
+    /**
+     * 8. РЕШАТЕЛЬ ЗАДАЧ
+     */
+    static void solveCustomProblems() {
+        System.out.println("\n8. РЕШАТЕЛЬ АЛГЕБРАИЧЕСКИХ ЗАДАЧ");
+        System.out.println("-------------------------------");
+        
+        // Проверим, является ли множество {0,3,6,9} идеалом в Z/12Z
+        Set<Integer> candidate = new HashSet<>(Arrays.asList(0, 3, 6, 9));
+        Set<Integer> Z12 = generateZModN(12);
+        
+        boolean isIdeal = true;
+        for (int a : candidate) {
+            for (int r : Z12) {
+                int product = (a * r) % 12;
+                if (!candidate.contains(product)) {
+                    isIdeal = false;
+                    break;
                 }
             }
+            if (!isIdeal) break;
         }
-        return true;
-    }
-    
-    /**
-     * Проверка простого идеала
-     */
-    static boolean isPrimeIdeal(Set<Integer> ideal, Set<Integer> R, BinaryOperator<Integer> mult) {
-        for (Integer a : R) {
-            for (Integer b : R) {
-                Integer product = mult.apply(a, b);
-                if (ideal.contains(product) && !ideal.contains(a) && !ideal.contains(b)) {
-                    return false;
-                }
-            }
+        
+        System.out.println("Задача: {0,3,6,9} - идеал в Z/12Z?");
+        System.out.println("Ответ: " + (isIdeal ? "Да" : "Нет"));
+        
+        if (isIdeal) {
+            System.out.println("Это главный идеал (3)");
         }
-        return true;
-    }
-    
-    /**
-     * Проверка максимального идеала
-     */
-    static boolean isMaximalIdeal(Set<Integer> ideal, Set<Integer> R, int n) {
-        // В Z/nZ идеал максимален тогда и только тогда, когда n простое
-        return ideal.size() > 1 && isPrime(n / ideal.size());
-    }
-    
-    /**
-     * Проверка простоты числа
-     */
-    static boolean isPrime(int num) {
-        if (num <= 1) return false;
-        for (int i = 2; i * i <= num; i++) {
-            if (num % i == 0) return false;
-        }
-        return true;
     }
 }

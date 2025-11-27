@@ -2,24 +2,48 @@ import java.util.*;
 import java.util.function.BinaryOperator;
 
 /**
- * РЕШЕНИЕ ЗАДАНИЯ ОТ ЮРИЯ СИМАКОВА
- * 
- * Задание: Задать два целочисленных множества 
- * и построить функцию над бинарной операцией
- * 
- * Автор: OnelifeOnedeath, студент спбгу 1-го курса мкн Группы 25.Б09-мкн
- * Дата: 27.11.2025
- * 
- * Особенности реализации:
- * - Поддержка любых бинарных операций через BinaryOperator
- * - Проверка свойств операций
- * - Табличное представление
- * - Тестовые примеры
+ * Исследование алгебраических структур: от множеств до колец
  */
 public class Main {
     
+    public static void main(String[] args) {
+        System.out.println("Исследование алгебраических структур");
+        System.out.println("=====================================\n");
+        
+        // Часть 1: Базовое задание - операции над множествами
+        demonstrateSetOperations();
+        
+        // Часть 2: Исследование колец и идеалов
+        investigateRingsAndIdeals();
+    }
+    
     /**
-     * Применяет бинарную операцию ко всем парам элементов из двух множеств
+     * ЧАСТЬ 1: Базовое задание - операции над множествами
+     */
+    static void demonstrateSetOperations() {
+        System.out.println("1. ОПЕРАЦИИ НАД МНОЖЕСТВАМИ");
+        System.out.println("---------------------------");
+        
+        Set<Integer> A = new HashSet<>(Arrays.asList(1, 2, 3, 4, 5));
+        Set<Integer> B = new HashSet<>(Arrays.asList(3, 4, 5, 6, 7));
+        
+        System.out.println("Множество A: " + A);
+        System.out.println("Множество B: " + B);
+        System.out.println();
+        
+        // Различные бинарные операции
+        BinaryOperator<Integer> op1 = (a, b) -> a * b + 1;
+        BinaryOperator<Integer> op2 = (a, b) -> a * a + b * b;
+        BinaryOperator<Integer> op3 = (a, b) -> Math.abs(a - b);
+        
+        System.out.println("a * b + 1:      " + applyBinaryOperation(A, B, op1));
+        System.out.println("a² + b²:        " + applyBinaryOperation(A, B, op2));
+        System.out.println("|a - b|:        " + applyBinaryOperation(A, B, op3));
+        System.out.println();
+    }
+    
+    /**
+     * Универсальная функция для бинарных операций над множествами
      */
     public static <T> Set<T> applyBinaryOperation(Set<T> setA, Set<T> setB, BinaryOperator<T> operation) {
         Set<T> result = new HashSet<>();
@@ -32,104 +56,219 @@ public class Main {
     }
     
     /**
-     * Демонстрация базовых операций из задания
+     * ЧАСТЬ 2: Исследование колец и циклических идеалов
      */
-    static void demonstrateBasicOperations() {
-        System.out.println("🎯 ЗАДАНИЕ: два множества + бинарная операция");
+    static void investigateRingsAndIdeals() {
+        System.out.println("2. КОЛЬЦА И ЦИКЛИЧЕСКИЕ ИДЕАЛЫ");
+        System.out.println("------------------------------");
         
-        // 1. Создаем два целочисленных множества
-        Set<Integer> A = new HashSet<>(Arrays.asList(1, 2, 3, 4, 5));
-        Set<Integer> B = new HashSet<>(Arrays.asList(3, 4, 5, 6, 7));
-        
-        System.out.println("Множество A: " + A);
-        System.out.println("Множество B: " + B);
-        System.out.println();
-        
-        // 2. Демонстрация разных бинарных операций
-        
-        // Операция 1: a * b + 1
-        BinaryOperator<Integer> op1 = (a, b) -> a * b + 1;
-        Set<Integer> result1 = applyBinaryOperation(A, B, op1);
-        System.out.println("1. Операция (a * b + 1): " + result1);
-        
-        // Операция 2: a² + b²
-        BinaryOperator<Integer> op2 = (a, b) -> a*a + b*b;
-        Set<Integer> result2 = applyBinaryOperation(A, B, op2);
-        System.out.println("2. Операция (a² + b²): " + result2);
-        
-        // Операция 3: |a - b|
-        BinaryOperator<Integer> op3 = (a, b) -> Math.abs(a - b);
-        Set<Integer> result3 = applyBinaryOperation(A, B, op3);
-        System.out.println("3. Операция |a - b|: " + result3);
+        // Исследуем разные кольца вычетов
+        investigateZModN(12, "Z/12Z - кольцо с богатой структурой идеалов");
+        investigateZModN(8, "Z/8Z - кольцо с идеалами степени 2");
+        investigateZModN(7, "Z/7Z - простое поле");
+        investigateZModN(6, "Z/6Z - не область целостности");
     }
     
     /**
-     * Проверка свойств замкнутости операции
+     * Исследование кольца Z/nZ
      */
-    static void demonstrateClosureProperties() {
-        System.out.println("\n🔍 ПРОВЕРКА СВОЙСТВ ОПЕРАЦИИ:");
-        Set<Integer> A = new HashSet<>(Arrays.asList(1, 2, 3));
+    static void investigateZModN(int n, String description) {
+        System.out.println("\n" + description);
+        System.out.println("Элементы: " + generateZModN(n));
         
-        // Проверяем замкнутость операции a * b + 1
-        BinaryOperator<Integer> op = (a, b) -> a * b + 1;
-        Set<Integer> result = applyBinaryOperation(A, A, op);
+        Set<Integer> ring = generateZModN(n);
+        BinaryOperator<Integer> add = (a, b) -> (a + b) % n;
+        BinaryOperator<Integer> mult = (a, b) -> (a * b) % n;
         
-        System.out.println("Множество A = " + A);
-        System.out.println("Результат A * A + 1 = " + result);
-        
-        // Проверяем, содержится ли исходное множество в результате
-        boolean isClosed = result.containsAll(A);
-        System.out.println("Замыкание: Множество A " + (isClosed ? "содержится" : "НЕ содержится") + " в результате операции");
-        
-        // Дополнительная проверка - все ли результаты принадлежат целым числам
-        boolean allIntegers = result.stream().allMatch(n -> n instanceof Integer);
-        System.out.println("Все результаты - целые числа: " + (allIntegers ? "ДА" : "НЕТ"));
+        if (verifyRing(ring, add, mult)) {
+            System.out.println("✓ Является кольцом");
+            findCyclicIdeals(ring, mult, n);
+        }
+        System.out.println();
     }
     
     /**
-     * Построение таблицы Кэли для операции
+     * Генерация множества Z/nZ
      */
-    static void demonstrateOperationTable() {
-        System.out.println("\n📊 ТАБЛИЦА ОПЕРАЦИИ (a * b + 1):");
-        Set<Integer> A = new TreeSet<>(Arrays.asList(1, 2, 3)); // TreeSet для упорядочивания
-        
-        // Заголовок таблицы
-        System.out.print("   ");
-        for (int b : A) {
-            System.out.print(" " + b + "  ");
+    static Set<Integer> generateZModN(int n) {
+        Set<Integer> result = new TreeSet<>();
+        for (int i = 0; i < n; i++) {
+            result.add(i);
         }
-        System.out.println();
+        return result;
+    }
+    
+    /**
+     * Проверка свойств кольца
+     */
+    static boolean verifyRing(Set<Integer> R, BinaryOperator<Integer> add, BinaryOperator<Integer> mult) {
+        // Проверяем наличие нуля
+        Integer zero = findZero(R, add);
+        if (zero == null) return false;
         
-        // Разделительная линия
-        System.out.print("  +");
-        for (int i = 0; i < A.size(); i++) {
-            System.out.print("----");
-        }
-        System.out.println();
+        // Проверяем абелеву группу по сложению
+        if (!verifyAbelianGroup(R, add, zero)) return false;
         
-        // Тело таблицы
-        for (int a : A) {
-            System.out.print(a + " |");
-            for (int b : A) {
-                int result = a * b + 1;
-                System.out.print(" " + result + " ");
+        // Проверяем ассоциативность умножения
+        if (!verifyAssociativity(R, mult)) return false;
+        
+        // Проверяем дистрибутивность
+        return verifyDistributivity(R, add, mult);
+    }
+    
+    /**
+     * Поиск нулевого элемента
+     */
+    static Integer findZero(Set<Integer> R, BinaryOperator<Integer> add) {
+        for (Integer candidate : R) {
+            boolean isZero = true;
+            for (Integer x : R) {
+                if (!add.apply(x, candidate).equals(x)) {
+                    isZero = false;
+                    break;
+                }
             }
-            System.out.println();
+            if (isZero) return candidate;
         }
-        
-        // Анализ таблицы
-        System.out.println("\n📈 АНАЛИЗ ТАБЛИЦЫ:");
-        System.out.println("- Коммутативность: " + checkCommutativity(A, (x, y) -> x * y + 1));
-        System.out.println("- Есть нейтральный элемент: " + hasIdentityElement(A, (x, y) -> x * y + 1));
+        return null;
     }
     
     /**
-     * Проверка коммутативности операции
+     * Проверка абелевой группы
      */
-    static boolean checkCommutativity(Set<Integer> set, BinaryOperator<Integer> operation) {
-        for (int a : set) {
-            for (int b : set) {
-                if (!operation.apply(a, b).equals(operation.apply(b, a))) {
+    static boolean verifyAbelianGroup(Set<Integer> R, BinaryOperator<Integer> add, Integer zero) {
+        // Ассоциативность
+        if (!verifyAssociativity(R, add)) return false;
+        
+        // Нулевой элемент
+        for (Integer x : R) {
+            if (!add.apply(x, zero).equals(x)) return false;
+        }
+        
+        // Противоположные элементы
+        for (Integer x : R) {
+            boolean hasInverse = false;
+            for (Integer y : R) {
+                if (add.apply(x, y).equals(zero) && add.apply(y, x).equals(zero)) {
+                    hasInverse = true;
+                    break;
+                }
+            }
+            if (!hasInverse) return false;
+        }
+        
+        // Коммутативность
+        for (Integer a : R) {
+            for (Integer b : R) {
+                if (!add.apply(a, b).equals(add.apply(b, a))) return false;
+            }
+        }
+        
+        return true;
+    }
+    
+    /**
+     * Проверка ассоциативности
+     */
+    static boolean verifyAssociativity(Set<Integer> R, BinaryOperator<Integer> op) {
+        for (Integer a : R) {
+            for (Integer b : R) {
+                for (Integer c : R) {
+                    Integer left = op.apply(op.apply(a, b), c);
+                    Integer right = op.apply(a, op.apply(b, c));
+                    if (!left.equals(right)) return false;
+                }
+            }
+        }
+        return true;
+    }
+    
+    /**
+     * Проверка дистрибутивности
+     */
+    static boolean verifyDistributivity(Set<Integer> R, BinaryOperator<Integer> add, BinaryOperator<Integer> mult) {
+        for (Integer a : R) {
+            for (Integer b : R) {
+                for (Integer c : R) {
+                    Integer left = mult.apply(a, add.apply(b, c));
+                    Integer right = add.apply(mult.apply(a, b), mult.apply(a, c));
+                    if (!left.equals(right)) return false;
+                }
+            }
+        }
+        return true;
+    }
+    
+    /**
+     * Поиск циклических идеалов
+     */
+    static void findCyclicIdeals(Set<Integer> R, BinaryOperator<Integer> mult, int n) {
+        System.out.println("Циклические идеалы:");
+        
+        // Проверяем все возможные образующие
+        for (int generator = 0; generator < n; generator++) {
+            Set<Integer> ideal = generateIdeal(R, mult, generator);
+            
+            if (ideal.size() > 0 && ideal.size() < R.size()) {
+                System.out.print("  (" + generator + ") = " + ideal);
+                
+                if (verifyIdeal(ideal, R, mult)) {
+                    System.out.print(" - идеал");
+                    
+                    // Дополнительная информация
+                    if (isPrimeIdeal(ideal, R, mult)) {
+                        System.out.print(", простой");
+                    }
+                    if (isMaximalIdeal(ideal, R, n)) {
+                        System.out.print(", максимальный");
+                    }
+                }
+                System.out.println();
+            }
+        }
+        
+        // Особые случаи
+        System.out.println("  (0) = {0} - нулевой идеал");
+        System.out.println("  (1) = " + R + " - единичный идеал");
+    }
+    
+    /**
+     * Генерация идеала по образующему
+     */
+    static Set<Integer> generateIdeal(Set<Integer> R, BinaryOperator<Integer> mult, int generator) {
+        Set<Integer> ideal = new TreeSet<>();
+        ideal.add(generator);
+        
+        boolean changed;
+        do {
+            changed = false;
+            Set<Integer> newElements = new HashSet<>();
+            
+            for (Integer a : ideal) {
+                for (Integer r : R) {
+                    Integer product = mult.apply(a, r);
+                    if (!ideal.contains(product)) {
+                        newElements.add(product);
+                        changed = true;
+                    }
+                }
+            }
+            ideal.addAll(newElements);
+        } while (changed);
+        
+        return ideal;
+    }
+    
+    /**
+     * Проверка свойств идеала
+     */
+    static boolean verifyIdeal(Set<Integer> ideal, Set<Integer> R, BinaryOperator<Integer> mult) {
+        for (Integer a : ideal) {
+            for (Integer r : R) {
+                Integer left = mult.apply(a, r);
+                Integer right = mult.apply(r, a);
+                
+                if (!ideal.contains(left) || !ideal.contains(right)) {
                     return false;
                 }
             }
@@ -138,97 +277,36 @@ public class Main {
     }
     
     /**
-     * Проверка наличия нейтрального элемента
+     * Проверка простого идеала
      */
-    static boolean hasIdentityElement(Set<Integer> set, BinaryOperator<Integer> operation) {
-        for (int candidate : set) {
-            boolean isIdentity = true;
-            for (int element : set) {
-                if (!operation.apply(element, candidate).equals(element) ||
-                    !operation.apply(candidate, element).equals(element)) {
-                    isIdentity = false;
-                    break;
+    static boolean isPrimeIdeal(Set<Integer> ideal, Set<Integer> R, BinaryOperator<Integer> mult) {
+        for (Integer a : R) {
+            for (Integer b : R) {
+                Integer product = mult.apply(a, b);
+                if (ideal.contains(product) && !ideal.contains(a) && !ideal.contains(b)) {
+                    return false;
                 }
             }
-            if (isIdentity) return true;
         }
-        return false;
+        return true;
     }
     
     /**
-     * Простые тесты для проверки корректности
+     * Проверка максимального идеала
      */
-    static void runTests() {
-        System.out.println("\n🧪 ТЕСТИРОВАНИЕ:");
-        
-        // Тест 1: Базовая функциональность
-        Set<Integer> testA = new HashSet<>(Arrays.asList(1, 2));
-        Set<Integer> testB = new HashSet<>(Arrays.asList(2, 3));
-        
-        BinaryOperator<Integer> testOp = (a, b) -> a + b;
-        Set<Integer> result = applyBinaryOperation(testA, testB, testOp);
-        
-        Set<Integer> expected = new HashSet<>(Arrays.asList(3, 4, 5));
-        boolean test1Passed = result.equals(expected);
-        
-        System.out.println("ТЕСТ 1 - Базовая операция сложения:");
-        System.out.println("  A={1,2}, B={2,3}, операция: a+b");
-        System.out.println("  Ожидаемый результат: {3,4,5}");
-        System.out.println("  Фактический результат: " + result);
-        System.out.println("  Статус: " + (test1Passed ? "ПРОЙДЕН ✅" : "ПРОВАЛЕН ❌"));
-        
-        // Тест 2: Пустые множества
-        Set<Integer> emptySet = new HashSet<>();
-        Set<Integer> resultEmpty = applyBinaryOperation(testA, emptySet, testOp);
-        boolean test2Passed = resultEmpty.isEmpty();
-        
-        System.out.println("\nТЕСТ 2 - Операция с пустым множеством:");
-        System.out.println("  A={1,2}, B={}, операция: a+b");
-        System.out.println("  Ожидаемый результат: {}");
-        System.out.println("  Фактический результат: " + resultEmpty);
-        System.out.println("  Статус: " + (test2Passed ? "ПРОЙДЕН ✅" : "ПРОВАЛЕН ❌"));
-        
-        // Тест 3: Одинаковые множества
-        Set<Integer> resultSame = applyBinaryOperation(testA, testA, testOp);
-        Set<Integer> expectedSame = new HashSet<>(Arrays.asList(2, 3, 4));
-        boolean test3Passed = resultSame.equals(expectedSame);
-        
-        System.out.println("\nТЕСТ 3 - Операция с одинаковыми множествами:");
-        System.out.println("  A={1,2}, B={1,2}, операция: a+b");
-        System.out.println("  Ожидаемый результат: {2,3,4}");
-        System.out.println("  Фактический результат: " + resultSame);
-        System.out.println("  Статус: " + (test3Passed ? "ПРОЙДЕН ✅" : "ПРОВАЛЕН ❌"));
-        
-        // Итог тестирования
-        System.out.println("\n📊 ИТОГ ТЕСТИРОВАНИЯ:");
-        int passedTests = (test1Passed ? 1 : 0) + (test2Passed ? 1 : 0) + (test3Passed ? 1 : 0);
-        System.out.println("Пройдено тестов: " + passedTests + "/3");
+    static boolean isMaximalIdeal(Set<Integer> ideal, Set<Integer> R, int n) {
+        // В Z/nZ идеал максимален тогда и только тогда, когда n простое
+        return ideal.size() > 1 && isPrime(n / ideal.size());
     }
     
     /**
-     * Главный метод с обработкой ошибок
+     * Проверка простоты числа
      */
-    public static void main(String[] args) {
-        try {
-            System.out.println("=" .repeat(50));
-            System.out.println("🚀 JAVA SET OPERATIONS - РЕШЕНИЕ ЗАДАНИЯ");
-            System.out.println("=" .repeat(50));
-            
-            // Мой код
-            demonstrateBasicOperations();
-            
-            // ДОБАВЛЯЕМ:
-            demonstrateClosureProperties();  // Проверка замкнутости
-            demonstrateOperationTable();     // Таблица операции  
-            runTests();                      // Простые тесты
-            
-            System.out.println("\n" + "=" .repeat(50));
-            System.out.println("✅ ВЫПОЛНЕНИЕ ЗАВЕРШЕНО УСПЕШНО!");
-            System.out.println("=" .repeat(50));
-            
-        } catch (Exception e) {
-            System.out.println("❌ ОШИБКА: " + e.getMessage());
-            e.printStackTrace();
+    static boolean isPrime(int num) {
+        if (num <= 1) return false;
+        for (int i = 2; i * i <= num; i++) {
+            if (num % i == 0) return false;
         }
+        return true;
     }
 }
